@@ -215,7 +215,8 @@ def create(cmd, resource_group_name, workspace_name, location, storage_account, 
     if skip_role_assignment:
         _add_quantum_providers(cmd, quantum_workspace, provider_sku_list, auto_accept, skip_autoadd)
         quantum_workspace.properties.api_key_enabled = True
-        quantum_workspace.properties.workspace_kind = workspace_kind or 'V1'
+        if workspace_kind:
+            quantum_workspace.properties.workspace_kind = workspace_kind
         poller = client.begin_create_or_update(info.resource_group, info.name, quantum_workspace, polling=False)
         while not poller.done():
             time.sleep(POLLING_TIME_DURATION)
@@ -273,6 +274,11 @@ def create(cmd, resource_group_name, workspace_name, location, storage_account, 
         'storageAccountDeploymentName': "Microsoft.StorageAccount-" + time.strftime("%d-%b-%Y-%H-%M-%S", time.gmtime()),
         'workspaceKind': workspace_kind or 'V1'
     }
+
+    if workspace_kind:
+        parameters['workspaceKind'] = workspace_kind
+
+
     parameters = {k: {'value': v} for k, v in parameters.items()}
 
     deployment_properties = {
