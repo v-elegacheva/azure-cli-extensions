@@ -541,10 +541,8 @@ class QuantumJobsScenarioTest(ScenarioTest):
                     self.assertEqual(actual_file.read(), expected_file.read())
 
             # Update the submitted job's name, priority, and tags, then confirm all three changes were applied.
-            # Retry the service-side failure tracked by Bug 55216 until the JobScheduler fix reaches production.
-            updated_job = self._cmd_with_retry(
-                f'az quantum job update -j {results["id"]} --job-name "Updated job name" --job-priority High --job-tags tag1 tag2 -o json',
-                retry_error_code='InternalError',
+            updated_job = self.cmd(
+                f'az quantum job update -j {results["id"]} --job-name "Updated job name" --job-priority High --job-tags tag1 tag2 -o json'
             ).get_output_in_json()
             self.assertEqual(updated_job["name"], "Updated job name")
             self.assertEqual(updated_job["priority"], "High")
